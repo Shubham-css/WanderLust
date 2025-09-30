@@ -1,0 +1,65 @@
+const express = require("express");
+const router = express.Router();
+const wrapAsync = require("../utils/wrapAsync.js");
+const Listing = require("../models/listing.js");
+const {isLoggedIn, isOwner,validateListing} = require("../middleware.js");
+const multer = require('multer')
+const {storage} = require("../cloudConfig.js");
+const upload = multer({ storage })
+
+const listingController = require("../controllers/listings.js")
+
+// --- Middleware to sanitize image field ---
+function sanitizeListingImage(req, res, next) {
+  if (req.body && req.body.listing && req.body.listing.image) {
+    let img = req.body.listing.image;
+
+    // If image was accidentally sent as an array, take the first value
+    if (Array.isArray(img)) {
+      img = img[0];
+    }
+
+    // If it's a string, trim spaces
+    if (typeof img === "string") {
+      img = img.trim();
+    }
+
+    // Assign back the cleaned version
+    req.body.listing.image = img;
+  }
+  next();
+}
+
+router
+.route("/")
+.get( wrapAsync(listingController.index))
+.post(
+isLoggedIn,
+sanitizeListingImage,
+upload.single("image"),
+validateListing,
+wrapAsync(listingController.createListing)
+);
+
+// New Route
+router.get("/new", isLoggedIn, listingController.renderNewForm);
+
+router.route("/:id")
+.get( wrapAsync(listingController.showListing))
+.put(
+isLoggedIn,
+isOwner,
+upload.single("listing[image]"),
+validateListing,
+wrapAsync(listingController.updateListing)
+)
+.delete(
+isLoggedIn,
+isOwner,
+wrapAsync(listingController.destroyListing)
+);
+
+// Edit Route
+router.get("/:id/edit", isLoggedIn,  isOwner, wrapAsync(listingController.renderEditForm));
+
+module.exports = router;
