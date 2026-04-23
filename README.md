@@ -8,10 +8,6 @@
 ![Bootstrap](https://img.shields.io/badge/Bootstrap-UI-purple)
 ![License](https://img.shields.io/badge/License-MIT-blue)
 
-![Repo Size](https://img.shields.io/github/repo-size/Shubham-css/WanderLust)
-![Stars](https://img.shields.io/github/stars/Shubham-css/WanderLust?style=social)
-![Forks](https://img.shields.io/github/forks/Shubham-css/WanderLust?style=social)
-
 ---
 
 ## 📌 Overview
